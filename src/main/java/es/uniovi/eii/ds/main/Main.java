@@ -1,5 +1,7 @@
 package es.uniovi.eii.ds.main;
 
+import es.uniovi.eii.ds.editor.Editor;
+
 import java.io.*;
 import java.util.Arrays;
 
@@ -16,7 +18,10 @@ public class Main {
 	
 	// Main program loop.
     public void run() {
-		drawLogo();
+
+        Editor e = new Editor();
+
+        drawLogo();
 		showHelp();
 
 		while (true) {
@@ -24,83 +29,29 @@ public class Main {
 			String[] args = command.args;
 
 			switch (command.name) {
-				case "open" -> open(args);
-				case "insert" -> { 
-					for (String word : args) {
-						text.append(" ").append(word);
-					}
-				}
-				case "delete" -> {
-					int indexOfLastWord = text.toString().trim().lastIndexOf(" ");
-					if (indexOfLastWord == -1)
-						text = new StringBuilder("");
-					else
-						text.setLength(indexOfLastWord);
-				}
-				case "replace" -> replace(args);
+				case "open" -> e.open(args[0]);
+				case "insert" -> e.insert(args);
+				case "delete" -> e.delete();
+				case "replace" -> {
+                    if (checkArguments(args, 2, "replace <find> <replace>")) {
+                        e.replace(args[0], args[1]);
+                    }
+                }
 				case "help" -> showHelp();
-				case "record" -> {
-					// String macroName = args[0];
-					// ...
-				}
-				case "stop" -> { 
-					// ...
-				}
-				case "execute" -> {
-					// String macroName = args[0];
-					// ...
-				}
+				case "record" -> e.recordMacro(args[0]);
+				case "stop" -> e.stopRecording();
+				case "execute" -> e.executeMacro(args[0]);
 				default -> {
 					System.out.println("Unknown command");
 					continue;
 				}
 			}
 
-			System.out.println(text);
+			System.out.println(e.getDocument().getText());
 		}
 	}
 
 	//$-- Some individual user commands that do a bit more work ---------------
-
-	private void open(String[] args) {
-		if (!checkArguments(args, 1, "open <file>"))
-			return;
-		try {
-			String filename = args[0];
-			text = new StringBuilder(readFile(filename));
-		} catch (Exception e) {
-			System.out.println("Document could not be opened");
-		}
-	}
-
-	private String readFile(String filename) {
-		InputStream in = getClass().getResourceAsStream("/" + filename);
-		if (in == null)
-			throw new IllegalArgumentException("File not found: " + filename);
-
-		try (BufferedReader input = new BufferedReader(new InputStreamReader(in))) {
-			StringBuilder result = new StringBuilder();
-			String line;
-			boolean firstLine = true;
-			while ((line = input.readLine()) != null) {
-				if (!firstLine)
-					result.append(System.lineSeparator());
-				result.append(line);
-				firstLine = false;
-			}
-			return result.toString();
-		} catch (IOException e) {
-			throw new UncheckedIOException(e);
-		}
-	}
-
-	private void replace(String[] args) {
-		if (!checkArguments(args, 2, "replace <find> <replace>"))
-			return;
-		String find = args[0];
-		String replace = args[1];
-		text = new StringBuilder(text.toString().replace(find, replace));
-	}
 
 	//$-- Auxiliary methods ---------------------------------------------------
 
