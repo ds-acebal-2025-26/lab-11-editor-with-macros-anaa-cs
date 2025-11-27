@@ -1,4 +1,4 @@
-package es.uniovi.eii.ds.editor.macros;
+package es.uniovi.eii.ds.editor.actions;
 
 public interface Action {
     void execute();

@@ -1,6 +1,6 @@
 package es.uniovi.eii.ds.editor;
 
-import es.uniovi.eii.ds.editor.macros.*;
+import es.uniovi.eii.ds.editor.actions.*;
 
 import java.io.*;
 import java.util.HashMap;
